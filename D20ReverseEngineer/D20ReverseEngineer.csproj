@@ -39,10 +39,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CharacterBuilder">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Wizards of the Coast\Character Builder\CharacterBuilder.exe</HintPath>
+      <HintPath>\Program Files (x86)\Wizards of the Coast\Character Builder\CharacterBuilder.exe</HintPath>
     </Reference>
     <Reference Include="D20RulesEngine">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Wizards of the Coast\Character Builder\D20RulesEngine.dll</HintPath>
+      <HintPath>\Program Files (x86)\Wizards of the Coast\Character Builder\D20RulesEngine.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -56,7 +56,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\..\..\..\..\Program Files %28x86%29\Wizards of the Coast\Character Builder\combined.dnd40.encrypted">
+    <Content Include="\Program Files %28x86%29\Wizards of the Coast\Character Builder\combined.dnd40.encrypted">
       <Link>combined.dnd40.encrypted</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
