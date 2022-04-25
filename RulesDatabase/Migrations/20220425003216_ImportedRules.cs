@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
+#nullable disable
+
 namespace RulesDatabase.Migrations
 {
     public partial class ImportedRules : Migration
@@ -10,24 +12,26 @@ namespace RulesDatabase.Migrations
                 name: "ImportedRules",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    WizardsId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    FlavorText = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ShortDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Category = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Prereqs = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    EncounterUses = table.Column<int>(type: "int", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    PowerUsage = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SkillPower_WizardsId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    Display = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ActionType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Class_WizardsId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    Level = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PowerType = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    WizardsId = table.Column<string>(type: "TEXT", nullable: true),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    FlavorText = table.Column<string>(type: "TEXT", nullable: true),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    ShortDescription = table.Column<string>(type: "TEXT", nullable: true),
+                    Category = table.Column<string>(type: "TEXT", nullable: true),
+                    Prereqs = table.Column<string>(type: "TEXT", nullable: true),
+                    EncounterUses = table.Column<int>(type: "INTEGER", nullable: false),
+                    Type = table.Column<string>(type: "TEXT", nullable: true),
+                    PowerUsage = table.Column<string>(type: "TEXT", nullable: true),
+                    SkillPower_Id = table.Column<int>(type: "INTEGER", nullable: true),
+                    SkillPower_WizardsId = table.Column<string>(type: "TEXT", nullable: true),
+                    Display = table.Column<string>(type: "TEXT", nullable: true),
+                    ActionType = table.Column<string>(type: "TEXT", nullable: true),
+                    Class_Id = table.Column<int>(type: "INTEGER", nullable: true),
+                    Class_WizardsId = table.Column<string>(type: "TEXT", nullable: true),
+                    Level = table.Column<string>(type: "TEXT", nullable: true),
+                    PowerType = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -38,9 +42,9 @@ namespace RulesDatabase.Migrations
                 name: "Keywords",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    KeywordName = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    KeywordName = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -51,9 +55,9 @@ namespace RulesDatabase.Migrations
                 name: "Sources",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SourceName = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    SourceName = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -64,14 +68,14 @@ namespace RulesDatabase.Migrations
                 name: "ImportedRules_AssociatedFeats",
                 columns: table => new
                 {
-                    ImportedRuleId = table.Column<int>(type: "int", nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    WizardsId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    WizardsId = table.Column<string>(type: "TEXT", nullable: true),
+                    ImportedRuleId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ImportedRules_AssociatedFeats", x => new { x.ImportedRuleId, x.Id });
+                    table.PrimaryKey("PK_ImportedRules_AssociatedFeats", x => x.Id);
                     table.ForeignKey(
                         name: "FK_ImportedRules_AssociatedFeats_ImportedRules_ImportedRuleId",
                         column: x => x.ImportedRuleId,
@@ -84,11 +88,10 @@ namespace RulesDatabase.Migrations
                 name: "RulesTextEntry",
                 columns: table => new
                 {
-                    RuleId = table.Column<int>(type: "int", nullable: false),
-                    Order = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Label = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Text = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    RuleId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Order = table.Column<int>(type: "INTEGER", nullable: false),
+                    Label = table.Column<string>(type: "TEXT", nullable: true),
+                    Text = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -105,8 +108,8 @@ namespace RulesDatabase.Migrations
                 name: "ImportedRuleKeyword",
                 columns: table => new
                 {
-                    KeywordsId = table.Column<int>(type: "int", nullable: false),
-                    RulesId = table.Column<int>(type: "int", nullable: false)
+                    KeywordsId = table.Column<int>(type: "INTEGER", nullable: false),
+                    RulesId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -129,8 +132,8 @@ namespace RulesDatabase.Migrations
                 name: "ImportedRuleSource",
                 columns: table => new
                 {
-                    RulesId = table.Column<int>(type: "int", nullable: false),
-                    SourcesId = table.Column<int>(type: "int", nullable: false)
+                    RulesId = table.Column<int>(type: "INTEGER", nullable: false),
+                    SourcesId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -173,15 +176,18 @@ namespace RulesDatabase.Migrations
                 name: "IX_ImportedRules_Type_Name",
                 table: "ImportedRules",
                 columns: new[] { "Type", "Name" },
-                unique: true,
-                filter: "[Type] IS NOT NULL AND [Name] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ImportedRules_WizardsId",
                 table: "ImportedRules",
                 column: "WizardsId",
-                unique: true,
-                filter: "[WizardsId] IS NOT NULL");
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ImportedRules_AssociatedFeats_ImportedRuleId",
+                table: "ImportedRules_AssociatedFeats",
+                column: "ImportedRuleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ImportedRules_AssociatedFeats_WizardsId",
@@ -197,15 +203,13 @@ namespace RulesDatabase.Migrations
                 name: "IX_Keywords_KeywordName",
                 table: "Keywords",
                 column: "KeywordName",
-                unique: true,
-                filter: "[KeywordName] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Sources_SourceName",
                 table: "Sources",
                 column: "SourceName",
-                unique: true,
-                filter: "[SourceName] IS NOT NULL");
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

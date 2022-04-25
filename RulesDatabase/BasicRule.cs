@@ -48,6 +48,7 @@ namespace RulesDatabase
 
     public class LinkedId
     {
+        public int Id { get; set; }
         public string WizardsId { get; set; }
     }
 

@@ -44,7 +44,9 @@ namespace RulesDatabase
                 text.WithOwner(text => text.Rule).HasForeignKey(text => text.RuleId);
                 text.HasKey(text => new { text.RuleId, text.Order });
 
-                eb.OwnsMany(rule => rule.AssociatedFeats).HasIndex(f => f.WizardsId);
+                var internalBuilder = eb.OwnsMany(rule => rule.AssociatedFeats);
+                internalBuilder.HasKey(f => f.Id);
+                internalBuilder.HasIndex(f => f.WizardsId);
                 eb.OwnsOne(rule => rule.SkillPower).HasIndex(f => f.WizardsId);
                 eb.OwnsOne(rule => rule.Class).HasIndex(f => f.WizardsId);
             });

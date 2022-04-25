@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -41,25 +42,25 @@ namespace D20ReverseEngineer
                 }
             }
 
-            using (var connection = new SqlConnection("Server=127.0.0.1;Database=rulesdb;User Id=sa;Password=l0cal!PW;"))
-            using (var insertRule = new SqlCommand(@"
-INSERT INTO [dbo].[ImportedRules]
-           ([WizardsId]
-           ,[Name]
-           ,[FlavorText]
-           ,[Description]
-           ,[ShortDescription]
-           ,[Category]
-           ,[Prereqs]
-           ,[EncounterUses]
-           ,[Type]
-           ,[PowerUsage]
-           ,[SkillPower_WizardsId]
-           ,[Display]
-           ,[ActionType]
-           ,[Class_WizardsId]
-           ,[Level]
-           ,[PowerType])
+            using (var connection = new SQLiteConnection("Data Source=4e.db;Cache=Shared;FailIfMissing=True;"))
+            using (var insertRule = new SQLiteCommand(@"
+INSERT INTO ImportedRules
+           (WizardsId
+           ,Name
+           ,FlavorText
+           ,Description
+           ,ShortDescription
+           ,Category
+           ,Prereqs
+           ,EncounterUses
+           ,Type
+           ,PowerUsage
+           ,SkillPower_WizardsId
+           ,Display
+           ,ActionType
+           ,Class_WizardsId
+           ,Level
+           ,PowerType)
      VALUES
            (@Id
            ,@Name
@@ -77,80 +78,80 @@ INSERT INTO [dbo].[ImportedRules]
            ,@Class_WizardsId
            ,@Level
            ,@PowerType);
-SELECT SCOPE_IDENTITY();
+  SELECT last_insert_rowid();
 ", connection))
-            using (var insertRuleKeyword = new SqlCommand(@"
-MERGE Keywords as Target
-USING (SELECT @KeywordName AS KeywordName) AS Source
-ON Target.KeywordName=Source.KeywordName
-WHEN NOT MATCHED THEN
-	INSERT (KeywordName) VALUES (Source.KeywordName);
+            using (var insertRuleKeyword = new SQLiteCommand(@"
+INSERT INTO Keywords (KeywordName) VALUES (@KeywordName)
+  ON CONFLICT(KeywordName) DO NOTHING;
 
 INSERT INTO ImportedRuleKeyword (RulesId, KeywordsId) 
 SELECT @ImportedRuleId, Id FROM Keywords WHERE KeywordName=@KeywordName;
 ", connection))
-            using (var insertRuleSource = new SqlCommand(@"
-MERGE Sources as Target
-USING (SELECT @SourceName AS SourceName) AS Source
-ON Target.SourceName=Source.SourceName
-WHEN NOT MATCHED THEN
-	INSERT (SourceName) VALUES (Source.SourceName);
+            using (var insertRuleSource = new SQLiteCommand(@"
+INSERT INTO Sources (SourceName) VALUES (@SourceName)
+  ON CONFLICT(SourceName) DO NOTHING;
 
 INSERT INTO ImportedRuleSource (RulesId, SourcesId) 
 SELECT @ImportedRuleId, Id FROM Sources WHERE SourceName=@SourceName;
 ", connection))
-            using (var insertRuleAssociatedFeat = new SqlCommand(@"
-INSERT INTO [dbo].[ImportedRules_AssociatedFeats]
-           ([ImportedRuleId]
-           ,[WizardsId])
+            using (var insertRuleAssociatedFeat = new SQLiteCommand(@"
+INSERT INTO ImportedRules_AssociatedFeats
+           (ImportedRuleId
+           ,WizardsId)
      VALUES
            (@ImportedRuleId
            ,@FeatId)
 ", connection))
-            using (var insertRuleTextEntry = new SqlCommand(@"
-INSERT INTO [dbo].[RulesTextEntry]
-           ([RuleId]
-           ,[Label]
-           ,[Text])
-     VALUES
-           (@ImportedRuleId
+            using (var insertRuleTextEntry = new SQLiteCommand(@"
+INSERT INTO RulesTextEntry
+           (RuleId
+           ,Label
+           ,Text
+           ,""Order"")
+     SELECT
+           @ImportedRuleId
            ,@Label
-           ,@Text);
+           ,@Text
+           ,COALESCE(MAX(""Order"")+1,1) From RulesTextEntry Where RuleId=@ImportedRuleId;
 ", connection))
             {
                 connection.Open();
-                insertRule.Parameters.Add("@Id", System.Data.SqlDbType.NVarChar);
-                insertRule.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
-                insertRule.Parameters.Add("@FlavorText", System.Data.SqlDbType.NVarChar);
-                insertRule.Parameters.Add("@Description", System.Data.SqlDbType.NVarChar);
-                insertRule.Parameters.Add("@ShortDescription", System.Data.SqlDbType.NVarChar);
-                insertRule.Parameters.Add("@Category", System.Data.SqlDbType.NVarChar);
-                insertRule.Parameters.Add("@Prereqs", System.Data.SqlDbType.NVarChar);
-                insertRule.Parameters.Add("@EncounterUses", System.Data.SqlDbType.Int);
-                insertRule.Parameters.Add("@Type", System.Data.SqlDbType.NVarChar);
-                insertRule.Parameters.Add("@PowerUsage", System.Data.SqlDbType.NVarChar);
-                insertRule.Parameters.Add("@SkillPower_WizardsId", System.Data.SqlDbType.NVarChar);
-                insertRule.Parameters.Add("@Display", System.Data.SqlDbType.NVarChar);
-                insertRule.Parameters.Add("@ActionType", System.Data.SqlDbType.NVarChar);
-                insertRule.Parameters.Add("@Class_WizardsId", System.Data.SqlDbType.NVarChar);
-                insertRule.Parameters.Add("@Level", System.Data.SqlDbType.NVarChar);
-                insertRule.Parameters.Add("@PowerType", System.Data.SqlDbType.NVarChar);
+                insertRule.Parameters.Add("@Id", System.Data.DbType.String);
+                insertRule.Parameters.Add("@Name", System.Data.DbType.String);
+                insertRule.Parameters.Add("@FlavorText", System.Data.DbType.String);
+                insertRule.Parameters.Add("@Description", System.Data.DbType.String);
+                insertRule.Parameters.Add("@ShortDescription", System.Data.DbType.String);
+                insertRule.Parameters.Add("@Category", System.Data.DbType.String);
+                insertRule.Parameters.Add("@Prereqs", System.Data.DbType.String);
+                insertRule.Parameters.Add("@EncounterUses", System.Data.DbType.Int32);
+                insertRule.Parameters.Add("@Type", System.Data.DbType.String);
+                insertRule.Parameters.Add("@PowerUsage", System.Data.DbType.String);
+                insertRule.Parameters.Add("@SkillPower_WizardsId", System.Data.DbType.String);
+                insertRule.Parameters.Add("@Display", System.Data.DbType.String);
+                insertRule.Parameters.Add("@ActionType", System.Data.DbType.String);
+                insertRule.Parameters.Add("@Class_WizardsId", System.Data.DbType.String);
+                insertRule.Parameters.Add("@Level", System.Data.DbType.String);
+                insertRule.Parameters.Add("@PowerType", System.Data.DbType.String);
 
-                insertRuleKeyword.Parameters.Add("@KeywordName", System.Data.SqlDbType.NVarChar);
-                insertRuleKeyword.Parameters.Add("@ImportedRuleId", System.Data.SqlDbType.Int);
+                insertRuleKeyword.Parameters.Add("@KeywordName", System.Data.DbType.String);
+                insertRuleKeyword.Parameters.Add("@ImportedRuleId", System.Data.DbType.Int32);
 
-                insertRuleSource.Parameters.Add("@SourceName", System.Data.SqlDbType.NVarChar);
-                insertRuleSource.Parameters.Add("@ImportedRuleId", System.Data.SqlDbType.Int);
+                insertRuleSource.Parameters.Add("@SourceName", System.Data.DbType.String);
+                insertRuleSource.Parameters.Add("@ImportedRuleId", System.Data.DbType.Int32);
 
-                insertRuleAssociatedFeat.Parameters.Add("@ImportedRuleId", System.Data.SqlDbType.Int);
-                insertRuleAssociatedFeat.Parameters.Add("@FeatId", System.Data.SqlDbType.NVarChar);
+                insertRuleAssociatedFeat.Parameters.Add("@ImportedRuleId", System.Data.DbType.Int32);
+                insertRuleAssociatedFeat.Parameters.Add("@FeatId", System.Data.DbType.String);
 
-                insertRuleTextEntry.Parameters.Add("@ImportedRuleId", System.Data.SqlDbType.Int);
-                insertRuleTextEntry.Parameters.Add("@Label", System.Data.SqlDbType.NVarChar);
-                insertRuleTextEntry.Parameters.Add("@Text", System.Data.SqlDbType.NVarChar);
+                insertRuleTextEntry.Parameters.Add("@ImportedRuleId", System.Data.DbType.Int32);
+                insertRuleTextEntry.Parameters.Add("@Label", System.Data.DbType.String);
+                insertRuleTextEntry.Parameters.Add("@Text", System.Data.DbType.String);
 
+                int count = 0;
                 foreach (var rule in rules)
                 {
+                    count++;
+                    if (count % 100 == 0)
+                        Console.WriteLine($"Moving rule {count} of {rules.Count}");
                     using (var transaction = connection.BeginTransaction())
                     {
                         insertRule.Parameters["@Id"].Value = rule.Id;
